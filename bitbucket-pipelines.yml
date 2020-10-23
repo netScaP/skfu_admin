@@ -1,0 +1,26 @@
+---
+image: node:alpine
+pipelines:
+  branches:
+    master:
+      - step:
+          deployment: staging
+          script: # Modify the commands below to build your repository.
+            - apk add --no-cache openssh-client
+            - echo "$(ls -la)"
+            - npm install
+            - npm install -g @vue/cli
+            - npm run build
+            - echo "$(ls -la dist/)"
+            - scp -o StrictHostKeyChecking=no -r dist/ $SSH_USER_PROD@$SSH_PORT_PROD:/home/coffee/coffeepanel
+    dev:
+      - step:
+          deployment: staging
+          script: # Modify the commands below to build your repository.
+            - apk add --no-cache openssh-client
+            - echo "$(ls -la)"
+            - npm install
+            - npm install -g @vue/cli
+            - npm run build
+            - echo "$(ls -la dist/)"
+            - scp -o StrictHostKeyChecking=no -r dist/ $SSH_USER_DEV@$SSH_PORT_DEV:/srv/www/admin_panel

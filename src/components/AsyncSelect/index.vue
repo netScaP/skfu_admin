@@ -1,0 +1,90 @@
+<template>
+  <v-select
+    :value="address"
+    v-bind="bind"
+    :label="label"
+    :reduce="service => service.id"
+    :options="addresses"
+    :fetchData="fetchAddresses"
+    :taggable="false"
+    :clearable="false"
+    :infinite-loading="false"
+    :placeholder="placeholder"
+    @search="resetAddresses"
+    @input="addressChanged" />
+</template>
+
+<script>
+export default {
+  name: 'AddressSelect',
+
+  props: {
+    service: {
+      type: String,
+      required: true,
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    value: {
+      type: Array | Number,
+      default: () => [],
+    },
+    bind: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+
+  data() {
+    return {
+      address: {},
+      addresses: [],
+      addressSearch: '',
+    }
+  },
+
+  watch: {
+    value: {
+      handler(val) {
+        this.address = val
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+
+  methods: {
+    async fetchAddresses() {
+      const query = {
+        $limit: -1,
+      }
+      if (this.addressSearch) {
+        query.$search = this.addressSearch
+      }
+      this.addresses = await this.$apiClient.service(this.service).find({
+        query,
+      })
+    },
+
+    resetAddresses(search) {
+      this.addressSearch = search
+      this.addresses = []
+      this.fetchAddresses()
+    },
+
+    addressChanged(address) {
+      this.address = address
+      this.$emit('value-changed', this.address)
+    },
+  },
+}
+</script>
+
+<style>
+</style>
