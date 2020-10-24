@@ -28,7 +28,7 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/companies',
+    redirect: '/dashboard',
     children: [
       {
         path: 'dashboard',
@@ -38,7 +38,7 @@ export const constantRouterMap = [
       },
     ],
     meta: {
-      availableRoles: ['admin', 'company'],
+      availableRoles: ['admin', 'company', 'university'],
     },
   },
 
@@ -137,7 +137,7 @@ export const constantRouterMap = [
         meta: {
           title: 'Студенты',
           icon: 'students',
-          roles: ['admin'],
+          roles: ['admin', 'university', 'company'],
         },
       },
       {
@@ -148,7 +148,7 @@ export const constantRouterMap = [
         meta: {
           title: 'Добавление студента',
           icon: 'students',
-          roles: ['admin'],
+          roles: ['admin', 'university', 'company'],
         },
       },
       {
@@ -159,12 +159,12 @@ export const constantRouterMap = [
         meta: {
           title: 'Изменение студента',
           icon: 'students',
-          roles: ['admin'],
+          roles: ['admin', 'university', 'company'],
         },
       },
     ],
     meta: {
-      availableRoles: ['admin'],
+      availableRoles: ['admin', 'university', 'company'],
     },
   },
 
@@ -209,7 +209,7 @@ export const constantRouterMap = [
         meta: {
           title: 'Вакансии',
           icon: 'companies',
-          roles: ['admin'],
+          roles: ['admin', 'company', 'university'],
         },
       },
       {
@@ -220,7 +220,7 @@ export const constantRouterMap = [
         meta: {
           title: 'Добавление вакансии',
           icon: 'companies',
-          roles: ['admin'],
+          roles: ['admin', 'company'],
         },
       },
       {
@@ -231,12 +231,12 @@ export const constantRouterMap = [
         meta: {
           title: 'Изменение вакансии',
           icon: 'companies',
-          roles: ['admin'],
+          roles: ['admin', 'company', 'university'],
         },
       },
     ],
     meta: {
-      availableRoles: ['admin'],
+      availableRoles: ['admin', 'company', 'university'],
     },
   },
 
@@ -252,7 +252,7 @@ export const constantRouterMap = [
       },
     ],
     meta: {
-      availableRoles: ['admin', 'company', 'point'],
+      availableRoles: ['admin'],
     },
   },
 
