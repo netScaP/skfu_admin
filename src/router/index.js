@@ -169,28 +169,28 @@ export const constantRouterMap = [
   },
 
   {
-    path: '/specializations/',
+    path: '/tags/',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Specializations',
-        component: () => import('@/views/specializations/index'),
-        meta: { title: 'Специализации', icon: 'categories' },
+        name: 'Tags',
+        component: () => import('@/views/tags/index'),
+        meta: { title: 'Теги', icon: 'categories' },
       },
       {
         path: 'add',
-        name: 'addSpecialization',
+        name: 'addTag',
         hidden: true,
-        component: () => import('@/views/specializations/SpecializationForm'),
-        meta: { title: 'Добавление специализации', icon: 'categories' },
+        component: () => import('@/views/tags/TagForm'),
+        meta: { title: 'Добавление тега', icon: 'categories' },
       },
       {
         path: 'edit/:id',
-        name: 'editSpecialization',
+        name: 'editTag',
         hidden: true,
-        component: () => import('@/views/specializations/SpecializationForm'),
-        meta: { title: 'Изменение специализации', icon: 'categories' },
+        component: () => import('@/views/tags/TagForm'),
+        meta: { title: 'Изменение тега', icon: 'categories' },
       },
     ],
     meta: {

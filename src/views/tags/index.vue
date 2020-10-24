@@ -12,7 +12,7 @@
       </div>
       <div class="add-button">
         <router-link 
-          :to="{ name: 'addSpecialization' }">
+          :to="{ name: 'addTag' }">
           <el-button
             type="success"
             icon="el-icon-plus"
@@ -22,7 +22,7 @@
     </div>
     <el-table
       v-loading="isLoading"
-      :data="specializations"
+      :data="tags"
       element-loading-text="Loading"
       border
       fit
@@ -42,14 +42,6 @@
           {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Тип" 
-        width="200">
-        <template slot-scope="scope">
-          {{ scope.row.type === 'main' ? 'Основная' : 'Подкатегория' }}
-        </template>
-      </el-table-column>
       <el-table-column
         fixed="right"
         label="Действия"
@@ -57,7 +49,7 @@
         <template slot-scope="scope">
           <div class="el-button-group">
             <router-link 
-              :to="{ name: 'editSpecialization', params: { id: scope.row.id }}" 
+              :to="{ name: 'editTag', params: { id: scope.row.id }}" 
               tag="button" 
               class="el-button el-button--default el-button--small" ><i class="el-icon-edit"/></router-link>
             <el-button 
@@ -83,13 +75,13 @@
 import confirmUpdate from '@/mixins/confirmUpdate'
 
 export default {
-  name: 'Specializations',
+  name: 'Tags',
 
   mixins: [confirmUpdate],
 
   data() {
     return {
-      specializations: [],
+      tags: [],
       filters: {},
       isLoading: true,
       total: 1,
@@ -104,7 +96,7 @@ export default {
 
   methods: {
     async fetchData() {
-      const specializationsService = this.$apiClient.service('specializations')
+      const tagsService = this.$apiClient.service('tags')
 
       this.isLoading = true
       const query = {
@@ -117,7 +109,7 @@ export default {
           query[key] = this.filters[key]
         }
       })
-      const response = await specializationsService.find({
+      const response = await tagsService.find({
         query,
       })
 
@@ -128,7 +120,7 @@ export default {
         return await this.fetchData()
       }
 
-      this.specializations = data
+      this.tags = data
       this.total = total
 
       this.isLoading = false
@@ -145,14 +137,14 @@ export default {
 
     async handleDelete(id) {
       try {
-        await this.confirmUpdate('Точно удалить специализацию?', 'Специализация не удалена')
+        await this.confirmUpdate('Точно удалить тег?', 'Тег не удалена')
       } catch (err) {
         return false
       }
 
-      await this.$apiClient.service('specializations').remove(id)
+      await this.$apiClient.service('tags').remove(id)
       this.$message({
-        message: 'Специализация удалена!',
+        message: 'Тег удалена!',
         type: 'success',
       })
 

@@ -84,21 +84,19 @@
       <el-row>
         <el-col :span="8">
           <el-form-item
-            prop="specializationsIds"
-            label="Специализации">
-            <AsyncSelect
-              service="specializations"
-              label="name"
-              :value="form.specializationsIds"
-              :multiple="true"
-              @value-changed="val => form.specializationsIds = val"
+            prop="tags"
+            label="Теги">
+            <Tags
+              :tags="form.tags"
+              @new-tag="addTag"
+              @delete-tag="deleteTag"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item
             prop="cityId"
-            label="Город (если требуется)">
+            label="Город">
             <AsyncSelect
               service="cities"
               label="name"
@@ -125,6 +123,19 @@
         <el-button @click="onCancel">Отмена</el-button>
       </el-form-item>
     </el-form>
+
+    <el-tabs
+      v-if="isEdit"
+      v-model="activeTab"
+    >
+      <el-tab-pane label="Студенты" name="students">
+        <Students :tags="form.tags" />
+      </el-tab-pane>
+
+      <el-tab-pane label="Интервью" name="interviews">
+        <Interviews />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -136,6 +147,9 @@ import confirmUpdate from '@/mixins/confirmUpdate'
 import cropUpload from '@/components/CropUpload'
 import Markdown from '@/components/Markdown'
 import AsyncSelect from '@/components/AsyncSelect'
+import Tags from '@/components/Tags'
+import Students from './StudentsList'
+import Interviews from './InterviewsList'
 
 export default {
   name: 'VacancyForm',
@@ -143,6 +157,9 @@ export default {
   components: {
     Markdown,
     AsyncSelect,
+    Tags,
+    Students,
+    Interviews,
   },
 
   mixins: [validateForm, confirmUpdate],
@@ -152,9 +169,10 @@ export default {
       form: {
         title: '',
         description: '',
-        specializationsIds: [],
+        tags: [],
         // userId: ''
       },
+      activeTab: 'students',
       show: false,
       isEdit: false,
       rules: {
@@ -324,6 +342,16 @@ export default {
     validateEmail(email) {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ //eslint-disable-line
       return re.test(String(email).toLowerCase())
+    },
+
+    addTag(tag) {
+      this.form.tags.push(tag)
+    },
+    deleteTag(tag) {
+      const index = this.form.tags.findIndex(e => e === tag)
+      if (index > -1) {
+        this.form.tags.splice(index, 1)
+      }
     },
   },
 }

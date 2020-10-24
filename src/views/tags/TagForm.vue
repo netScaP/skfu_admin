@@ -13,27 +13,6 @@
             <el-input v-model="form.name"/>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
-          <el-form-item prop="type" label="Тип">
-            <el-select v-model="form.type">
-              <el-option label="Основная" value="main" />
-              <el-option label="Подспециализация" value="sub" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row v-if="form.type === 'sub'">
-        <el-col :span="8">
-          <el-form-item label="Специализация">
-            <AsyncSelect
-              service="specializations"
-              label="name"
-              :value="form.specializationId"
-              :multiple="false"
-              @value-changed="val => form.specializationId = val"
-            />
-          </el-form-item>
-        </el-col>
       </el-row>
       <el-form-item>
         <el-button
@@ -58,14 +37,12 @@
 import validateForm from '@/mixins/validateForm'
 import confirmUpdate from '@/mixins/confirmUpdate'
 import cropUpload from '@/components/CropUpload'
-import AsyncSelect from '@/components/AsyncSelect'
 
 export default {
-  name: 'SpecializationForm',
+  name: 'TagForm',
 
   components: {
     cropUpload,
-    AsyncSelect,
   },
 
   mixins: [validateForm, confirmUpdate],
@@ -79,7 +56,7 @@ export default {
       show: false,
       isEdit: false,
       rules: {
-        name: [{ required: true, message: 'Введите название специализаци', trigger: 'blur' }],
+        name: [{ required: true, message: 'Введите название тега', trigger: 'blur' }],
       },
       imageUrl: '',
     }
@@ -94,8 +71,8 @@ export default {
 
   methods: {
     async fetchData() {
-      const specializationsService = this.$apiClient.service('specializations')
-      const res = await specializationsService.get(this.$route.params.id)
+      const tagsService = this.$apiClient.service('tags')
+      const res = await tagsService.get(this.$route.params.id)
 
       this.form = res
 
@@ -113,14 +90,14 @@ export default {
       }
 
       try {
-        await this.confirmUpdate('Сохранить изменения специализаци?', 'Специализация не изменена')
+        await this.confirmUpdate('Сохранить изменения тег?', 'Тег не изменена')
       } catch (err) {
         return false
       }
 
-      const specializationsService = this.$apiClient.service('specializations')
+      const tagsService = this.$apiClient.service('tags')
 
-      await specializationsService.patch(this.$route.params.id, {
+      await tagsService.patch(this.$route.params.id, {
         ...this.form,
       })
 
@@ -134,11 +111,11 @@ export default {
       }
 
       this.$message({
-        message: 'Специализация изменена!',
+        message: 'Тег изменена!',
         type: 'success',
       })
 
-      this.$router.push({ name: 'Specializations' })
+      this.$router.push({ name: 'Tags' })
     },
 
     async onAdd() {
@@ -148,18 +125,18 @@ export default {
         return false
       }
 
-      const specializationsService = this.$apiClient.service('specializations')
+      const tagsService = this.$apiClient.service('tags')
 
-      await specializationsService.create({
+      await tagsService.create({
         ...this.form,
       })
 
       this.$message({
-        message: 'Специализация сохранена!',
+        message: 'Тег сохранена!',
         type: 'success',
       })
 
-      this.$router.push({ name: 'Specializations' })
+      this.$router.push({ name: 'Tags' })
     },
 
     hideLogo() {
@@ -179,16 +156,13 @@ export default {
 
     async onCancel() {
       try {
-        await this.confirmUpdate(
-          'Оменить изменения специализаци?',
-          'Продолжайте редактирование специализаци'
-        )
+        await this.confirmUpdate('Оменить изменения тег?', 'Продолжайте редактирование тег')
       } catch (err) {
         return false
       }
 
       this.$message({
-        message: 'Специализация не изменена!',
+        message: 'Тег не изменена!',
         type: 'warning',
       })
 
@@ -200,7 +174,7 @@ export default {
         await this.deleteLogo()
       }
 
-      this.$router.push({ name: 'Specializations' })
+      this.$router.push({ name: 'Tags' })
     },
 
     handleImageDataUrl(url) {

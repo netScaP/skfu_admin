@@ -3,10 +3,10 @@
     :value="address"
     v-bind="bind"
     :label="label"
-    :reduce="service => service.id"
+    :reduce="reduce"
     :options="addresses"
     :fetchData="fetchAddresses"
-    :taggable="false"
+    :taggable="taggable"
     :clearable="false"
     :infinite-loading="false"
     :placeholder="placeholder"
@@ -23,6 +23,10 @@ export default {
       type: String,
       required: true,
     },
+    taggable: {
+      type: Boolean,
+      default: false,
+    },
     label: {
       type: String,
       required: true,
@@ -38,6 +42,10 @@ export default {
     bind: {
       type: Object,
       default: () => ({}),
+    },
+    reduce: {
+      type: Function,
+      default: val => val.id,
     },
   },
 

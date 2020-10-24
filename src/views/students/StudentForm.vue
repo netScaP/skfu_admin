@@ -23,6 +23,16 @@
       </el-row>
       <el-row>
         <el-col :span="8">
+          <el-form-item
+            prop="birthDate"
+            label="Дата рождения">
+            <el-date-picker type="date" v-model="form.birthDate"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" />
+      </el-row>
+      <el-row>
+        <el-col :span="8">
           <el-form-item label="E-mail">
             <el-input 
               v-model="form.email" 
@@ -51,19 +61,17 @@
             />
           </el-form-item>
         </el-col>
-        <!-- <el-col :span="8">
+        <el-col :span="8">
           <el-form-item
-            prop="specializationsIds"
-            label="Специализации">
-            <AsyncSelect
-              service="specializations"
-              label="name"
-              :value="form.specializationsIds"
-              :multiple="true"
-              @value-changed="val => form.specializationsIds = val"
+            prop="tags"
+            label="Теги">
+            <Tags
+              :tags="form.tags"
+              @new-tag="addTag"
+              @delete-tag="deleteTag"
             />
           </el-form-item>
-        </el-col> -->
+        </el-col>
       </el-row>
       <h1>Образование студента</h1>
       <div v-for="(university, index) in form.universitiesIds" :key="index">
@@ -81,19 +89,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item
-              prop="specializationId"
-              label="Специализация">
-              <AsyncSelect
-                service="specializations"
-                label="name"
-                :value="university.specializationId"
-                :multiple="true"
-                @value-changed="val => setUniversity('specializationId', val, index)"
-              />
-            </el-form-item>
-          </el-col>
+          <el-col :span="8" />
         </el-row>
         <el-row>
           <el-col :span="8">
@@ -242,6 +238,7 @@ import confirmUpdate from '@/mixins/confirmUpdate'
 import cropUpload from '@/components/CropUpload'
 import Markdown from '@/components/Markdown'
 import AsyncSelect from '@/components/AsyncSelect'
+import Tags from '@/components/Tags'
 
 export default {
   name: 'StudentForm',
@@ -249,6 +246,7 @@ export default {
   components: {
     Markdown,
     AsyncSelect,
+    Tags,
   },
 
   mixins: [validateForm, confirmUpdate],
@@ -260,7 +258,6 @@ export default {
         email: '',
         phone: '',
         description: '',
-        specializationsIds: [],
         universitiesIds: [{}],
         isAvailable: true,
         // userId: ''
@@ -452,6 +449,16 @@ export default {
 
     setUniversity(field, val, index) {
       this.form.universitiesIds[index][field] = val
+    },
+
+    addTag(tag) {
+      this.form.tags.push(tag)
+    },
+    deleteTag(tag) {
+      const index = this.form.tags.findIndex(e => e === tag)
+      if (index > -1) {
+        this.form.tags.slice(index, 1)
+      }
     },
   },
 }
