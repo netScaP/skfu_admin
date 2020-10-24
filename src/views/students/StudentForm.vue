@@ -270,7 +270,8 @@ export default {
       show: false,
       isEdit: false,
       rules: {
-        name: [{ required: true, message: 'Введите название компании', trigger: 'blur' }],
+        firstName: [{ required: true, message: 'Введите имя', trigger: 'blur' }],
+        lastName: [{ required: true, message: 'Введите фамилию', trigger: 'blur' }],
         user: [
           {
             validator: (rule, value, callback) => {
