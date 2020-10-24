@@ -32,16 +32,7 @@
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Имя"
-        min-width="250">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="E-mail"
-        width="250">
+        label="E-mail">
         <template slot-scope="scope">
           {{ scope.row.email }}
         </template>
@@ -51,19 +42,7 @@
         label="Роль"
         width="200">
         <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
-      </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Доступы"
-        min-width="200">
-        <template slot-scope="scope">
-          <p
-            v-for="(permission, index) in scope.row.permissions"
-            :key="index">
-            {{ permission }}
-          </p>
+          {{ scope.row.role }}
         </template>
       </el-table-column>
       <el-table-column
@@ -73,20 +52,8 @@
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button 
-              v-if="scope.row.isConfirmed" 
               size="small" 
-              @click="updateActive({ isConfirmed: false }, scope.row._id, scope.$index)">
-              Убрать подтверждение
-            </el-button>
-            <el-button
-              v-else
-              size="small"
-              @click="updateActive({ isConfirmed: true }, scope.row._id, scope.$index)">
-              Подтвердить
-            </el-button>
-            <el-button 
-              size="small" 
-              @click="handleDelete(scope.row._id)"><i class="el-icon-delete"/></el-button>
+              @click="handleDelete(scope.row.id)"><i class="el-icon-delete"/></el-button>
           </div>
         </template>
       </el-table-column>
@@ -109,7 +76,7 @@ import confirmUpdate from '@/mixins/confirmUpdate'
 export default {
   name: 'Users',
 
-  mixins: [ confirmUpdate ],
+  mixins: [confirmUpdate],
 
   data() {
     return {
@@ -118,7 +85,7 @@ export default {
       isLoading: true,
       total: 1,
       limit: 10,
-      page: 1
+      page: 1,
     }
   },
 
@@ -130,24 +97,20 @@ export default {
     async fetchData() {
       this.isLoading = true
       const usersService = this.$apiClient.service('users')
-   
+
       const query = {
         $limit: this.limit,
         $skip: this.page - 1 ? (this.page - 1) * this.limit : 0,
-        $byPermissions: true
       }
       if (this.searchField !== '') {
         query.email = { $search: this.searchField }
       }
 
       const response = await usersService.find({
-        query
+        query,
       })
 
-      const {
-        data,
-        total
-      } = response
+      const { data, total } = response
 
       if (data.length === 0 && this.page > 1) {
         this.page -= 1
@@ -166,30 +129,6 @@ export default {
       this.fetchData()
     },
 
-    async updateActive({ isConfirmed }, userId, index) {
-      try {
-        const title = isConfirmed ? 'Подтвердить аккаунт этого пользователя?' : 'Убрать подтверждение этого аккаунта?'
-        const closeText = isConfirmed ? 'Аккаунт не подтвержден' : 'Аккаунт остался подтверждённым'
-        await this.confirmUpdate(title, closeText)
-      } catch (err) {
-        return false
-      }
-
-      const usersService = this.$apiClient.service('users')
-
-      await usersService.patch(userId, { isConfirmed })
-
-      const message = isConfirmed ? 'Аккаунт подтверждён' : 'С аккаунта снято подтверждение'
-      this.$message({
-        message,
-        type: 'success'
-      })
-
-      const users = [...this.users]
-      users[index].isConfirmed = isConfirmed
-      this.users = users
-    },
-
     async handleDelete(userId) {
       try {
         await this.confirmUpdate('Точно удалить этот аккаунт?', 'Аккаунт удалён')
@@ -204,20 +143,18 @@ export default {
 
         this.$message({
           message: 'Аккаунт удалён',
-          type: 'success'
+          type: 'success',
         })
 
         return await this.fetchData()
       } catch (err) {
         this.$message({
           message: 'Не удалось удалить аккаунт',
-          type: 'warning'
+          type: 'warning',
         })
       }
-    }
-
-  }
-
+    },
+  },
 }
 </script>
 
