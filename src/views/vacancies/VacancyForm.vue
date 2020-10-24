@@ -14,7 +14,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="Опыт работы">
+          <el-form-item label="Рабочая ставка">
             <el-select v-model="form.workingRate">
               <el-option label="0.5" value="0.5" />
               <el-option label="1" value="1" />
@@ -41,9 +41,9 @@
       </el-row>
       <el-row>
         <el-col :span="8">
-          <el-form-item label="Рабочая ставка">
+          <el-form-item label="Опыт работы">
             <el-input-number
-              v-model="form.workingRate" />
+              v-model="form.experience" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
