@@ -4,7 +4,7 @@
       <div class="filters">
         <el-input
           v-model="filters.$search"
-          placeholder="Название"
+          placeholder="ФИО"
         />
         <el-button @click="onFilterClick">
           Применить

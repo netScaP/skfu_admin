@@ -73,7 +73,7 @@
               prop="universityId"
               label="Университет">
               <AsyncSelect
-                service="cities"
+                service="universities"
                 label="name"
                 :value="university.universityId"
                 :multiple="false"
