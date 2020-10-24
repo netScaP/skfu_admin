@@ -66,10 +66,9 @@
         width="400">
         <template slot-scope="scope">
           <div class="el-button-group">
-            <router-link 
-              :to="{ name: 'editStudent', params: { id: scope.row.id }}" 
-              tag="button" 
-              class="el-button el-button--default el-button--small" >Посмотреть профиль</router-link>
+            <el-button @click="() => openStudent(scope.row.id)"> 
+              Посмотреть профиль
+            </el-button>
             
             <el-popover
               placement="left"
@@ -83,6 +82,7 @@
                 @input="val => createInterview(scope.row.id, val)"
               />
               <el-button 
+                v-if="isEdit"
                 slot="reference"
                 size="small" 
                 type="primary"
@@ -119,6 +119,10 @@ export default {
     tags: {
       type: Array,
       default: () => [],
+    },
+    isEdit: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -234,6 +238,11 @@ export default {
     openPopup(studentId) {
       this.showPopup = true
       this.studentId = studentId
+    },
+
+    openStudent(studentId) {
+      let routeData = this.$router.resolve({ name: 'editStudent', params: { id: studentId } })
+      window.open(routeData.href, '_blank')
     },
   },
 }

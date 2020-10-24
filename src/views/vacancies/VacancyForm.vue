@@ -125,14 +125,13 @@
     </el-form>
 
     <el-tabs
-      v-if="isEdit"
       v-model="activeTab"
     >
       <el-tab-pane label="Студенты" name="students">
-        <Students :tags="form.tags" />
+        <Students :tags="form.tags" :is-edit="isEdit" />
       </el-tab-pane>
 
-      <el-tab-pane label="Интервью" name="interviews">
+      <el-tab-pane v-if="isEdit" label="Интервью" name="interviews">
         <Interviews />
       </el-tab-pane>
     </el-tabs>
