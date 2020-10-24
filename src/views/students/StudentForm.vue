@@ -259,6 +259,7 @@ export default {
         phone: '',
         description: '',
         universitiesIds: [{}],
+        tags: [],
         isAvailable: true,
         // userId: ''
         user: {
