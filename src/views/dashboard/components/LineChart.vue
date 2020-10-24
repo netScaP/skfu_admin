@@ -13,29 +13,29 @@ export default {
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: 'chart',
     },
     width: {
       type: String,
-      default: '100%'
+      default: '100%',
     },
     height: {
       type: String,
-      default: '400px'
+      default: '400px',
     },
     autoResize: {
       type: Boolean,
-      default: true
+      default: true,
     },
     chartData: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       chart: null,
-      sidebarElm: null
+      sidebarElm: null,
     }
   },
   watch: {
@@ -43,8 +43,8 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val.quantities, val.dates)
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.initChart()
@@ -69,7 +69,8 @@ export default {
       window.removeEventListener('resize', this.__resizeHandler)
     }
 
-    this.sidebarElm && this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler)
+    this.sidebarElm &&
+      this.sidebarElm.removeEventListener('transitionend', this.sidebarResizeHandler)
 
     this.chart.dispose()
     this.chart = null
@@ -81,7 +82,7 @@ export default {
       }
     },
     setOptions({ company, point } = {}, dates) {
-      if (!company || !point) {
+      if (!company) {
         return false
       }
 
@@ -90,74 +91,56 @@ export default {
           data: dates,
           boundaryGap: false,
           axisTick: {
-            show: false
-          }
+            show: false,
+          },
         },
         grid: {
           left: 10,
           right: 10,
           bottom: 20,
           top: 30,
-          containLabel: true
+          containLabel: true,
         },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross'
+            type: 'cross',
           },
-          padding: [5, 10]
+          padding: [5, 10],
         },
         yAxis: {
           axisTick: {
-            show: false
-          }
+            show: false,
+          },
         },
         legend: {
-          data: [company.name, point.name]
+          data: [company.name],
         },
-        series: [{
-          name: company.name, 
-          itemStyle: {
-            normal: {
-              color: '#FF005A',
-              lineStyle: {
+        series: [
+          {
+            name: company.name,
+            itemStyle: {
+              normal: {
                 color: '#FF005A',
-                width: 2
-              }
-            }
-          },
-          smooth: true,
-          type: 'line',
-          data: company.data,
-          animationDuration: 2800,
-          animationEasing: 'cubicInOut'
-        },
-        {
-          name: point.name,
-          smooth: true,
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: '#3888fa',
-              lineStyle: {
-                color: '#3888fa',
-                width: 2
+                lineStyle: {
+                  color: '#FF005A',
+                  width: 2,
+                },
               },
-              areaStyle: {
-                color: '#f3f8ff'
-              }
-            }
+            },
+            smooth: true,
+            type: 'line',
+            data: company.data,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
           },
-          data: point.data,
-          animationDuration: 2800,
-          animationEasing: 'quadraticOut'
-        }]
+        ],
       })
     },
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData.quantities, this.chartData.dates)
-    }
-  }
+    },
+  },
 }
 </script>

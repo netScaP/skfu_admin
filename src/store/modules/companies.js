@@ -41,7 +41,6 @@ const companies = {
   actions: {
     setCompanyId({ commit, dispatch }, payload) {
       commit('SET_COMPANY_ID', payload)
-      dispatch('fetchPointsByCompany')
     },
 
     setPointId({ commit }, payload) {
