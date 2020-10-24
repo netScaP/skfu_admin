@@ -28,7 +28,7 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/companies',
     children: [
       {
         path: 'dashboard',
@@ -191,6 +191,48 @@ export const constantRouterMap = [
         hidden: true,
         component: () => import('@/views/specializations/SpecializationForm'),
         meta: { title: 'Изменение специализации', icon: 'categories' },
+      },
+    ],
+    meta: {
+      availableRoles: ['admin'],
+    },
+  },
+
+  {
+    path: '/vacancies',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Vacancies',
+        component: () => import('@/views/vacancies/index'),
+        meta: {
+          title: 'Вакансии',
+          icon: 'companies',
+          roles: ['admin'],
+        },
+      },
+      {
+        path: 'add',
+        name: 'addVacancy',
+        hidden: true,
+        component: () => import('@/views/vacancies/VacancyForm'),
+        meta: {
+          title: 'Добавление вакансии',
+          icon: 'companies',
+          roles: ['admin'],
+        },
+      },
+      {
+        path: 'edit/:id',
+        name: 'editVacancy',
+        hidden: true,
+        component: () => import('@/views/vacancies/VacancyForm'),
+        meta: {
+          title: 'Изменение вакансии',
+          icon: 'companies',
+          roles: ['admin'],
+        },
       },
     ],
     meta: {

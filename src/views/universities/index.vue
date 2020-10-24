@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
     <div class="top-menu el-col el-col-24 el-col-xs-24 el-col-sm-24 el-col-md-24 tp-text--right mb-4">
-      <div class="filters" />
+      <div class="filters">
+        <el-input
+          v-model="filters.$search"
+          placeholder="Название"
+        />
+        <el-button @click="onFilterClick">
+          Применить
+        </el-button>
+      </div>
       <div class="add-button">
         <router-link 
           :to="{ name: 'addUniversity' }">
@@ -116,6 +124,7 @@ export default {
   data() {
     return {
       universities: [],
+      filters: {},
       isLoading: true,
       total: 1,
       limit: 10,
@@ -137,6 +146,11 @@ export default {
         $skip: this.page - 1 ? (this.page - 1) * this.limit : 0,
       }
 
+      Object.keys(this.filters).forEach(key => {
+        if (this.filters[key]) {
+          query[key] = this.filters[key]
+        }
+      })
       const response = await universitiesService.find({
         query,
       })
@@ -176,6 +190,10 @@ export default {
       })
 
       return await this.fetchData()
+    },
+    onFilterClick() {
+      this.page = 1
+      this.fetchData()
     },
   },
 }

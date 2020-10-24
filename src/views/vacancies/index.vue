@@ -1,18 +1,29 @@
 <template>
   <div class="app-container">
     <div class="top-menu el-col el-col-24 el-col-xs-24 el-col-sm-24 el-col-md-24 tp-text--right mb-4">
-      <div class="filters" />
-        <!-- <el-input
-          v-model="filters.$search"
-          placeholder="Название"
+      <div class="filters">
+        <el-input
+          v-model="filters.salaryFrom"
+          label="Зарплата от"
+          placeholder="Зарплата от"
         />
+        <el-input
+          v-model="filters.experience"
+          placeholder="Минимальный опыт работы"
+        />
+        <el-select v-model="filters.workingRate" placeholder="Рабочая ставка">
+          <el-option label="0.5" value="0.5" />
+          <el-option label="1" value="1" />
+          <el-option label="1.5" value="1.5" />
+          <el-option label="2" value="2" />
+        </el-select>
         <el-button @click="onFilterClick">
           Применить
         </el-button>
-      </div> -->
+      </div>
       <div class="add-button">
         <router-link 
-          :to="{ name: 'addStudent' }">
+          :to="{ name: 'addVacancy' }">
           <el-button
             type="success"
             icon="el-icon-plus"
@@ -22,7 +33,7 @@
     </div>
     <el-table
       v-loading="isLoading"
-      :data="students"
+      :data="vacancies"
       element-loading-text="Loading"
       border
       fit
@@ -37,34 +48,27 @@
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Имя">
+        label="Заголовок">
         <template slot-scope="scope">
-          {{ scope.row.firstName }}
-          {{ scope.row.lastName }}
+          {{ scope.row.title }}
         </template>
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Телефон" 
+        label="Зарплата" 
         width="200">
         <template slot-scope="scope">
-          {{ scope.row.phone }}
+          {{ scope.row.salaryFrom }}
+          -
+          {{ scope.row.salaryTo }}
         </template>
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Email" 
+        label="Опыт работы" 
         width="200">
         <template slot-scope="scope">
-          {{ scope.row.email }}
-        </template>
-      </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Дата рождения" 
-        width="200">
-        <template slot-scope="scope">
-          {{ scope.row.birthDate | toDateFormat }}
+          {{ scope.row.experience }}
         </template>
       </el-table-column>
       <el-table-column
@@ -75,7 +79,7 @@
         <template slot-scope="scope">
           <div class="el-button-group">
             <router-link 
-              :to="{ name: 'editStudent', params: { id: scope.row.id }}" 
+              :to="{ name: 'editVacancy', params: { id: scope.row.id }}" 
               tag="button" 
               class="el-button el-button--default el-button--small" ><i class="el-icon-edit"/></router-link>
             <el-button 
@@ -99,16 +103,15 @@
 
 <script>
 import confirmUpdate from '@/mixins/confirmUpdate'
-import moment from 'moment'
 
 export default {
-  name: 'Students',
+  name: 'Vacancies',
 
   mixins: [confirmUpdate],
 
   data() {
     return {
-      students: [],
+      vacancies: [],
       filters: {},
       isLoading: true,
       total: 1,
@@ -117,19 +120,13 @@ export default {
     }
   },
 
-  filters: {
-    toDateFormat(val) {
-      return moment(val).format('YYYY-MM-DD')
-    },
-  },
-
   mounted() {
     this.fetchData()
   },
 
   methods: {
     async fetchData() {
-      const studentsService = this.$apiClient.service('students')
+      const vacanciesService = this.$apiClient.service('vacancies')
 
       this.isLoading = true
       const query = {
@@ -139,11 +136,16 @@ export default {
 
       Object.keys(this.filters).forEach(key => {
         if (this.filters[key]) {
-          query[key] = this.filters[key]
+          if (key === 'salaryFrom') {
+            query.salaryFrom = { $gte: this.filters[key] }
+          } else if (key === 'experience') {
+            query.experience = { $gte: this.filters[key] }
+          } else {
+            query[key] = this.filters[key]
+          }
         }
       })
-
-      const response = await studentsService.find({
+      const response = await vacanciesService.find({
         query,
       })
 
@@ -154,7 +156,7 @@ export default {
         return await this.fetchData()
       }
 
-      this.students = data
+      this.vacancies = data
       this.total = total
 
       this.isLoading = false
@@ -170,19 +172,20 @@ export default {
 
     async handleDelete(id) {
       try {
-        await this.confirmUpdate('Точно удалить студента?', 'Студент не удалена')
+        await this.confirmUpdate('Точно удалить вакансию?', 'Вакансия не удалена')
       } catch (err) {
         return false
       }
 
-      await this.$apiClient.service('students').remove(id)
+      await this.$apiClient.service('vacancies').remove(id)
       this.$message({
-        message: 'Студент удалена!',
+        message: 'Вакансия удалена!',
         type: 'success',
       })
 
       return await this.fetchData()
     },
+
     onFilterClick() {
       this.page = 1
       this.fetchData()
