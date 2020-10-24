@@ -8,11 +8,20 @@
       <el-row>
         <el-col :span="8">
           <el-form-item
-            prop="name"
-            label="Название">
-            <el-input v-model="form.name"/>
+            prop="firstName"
+            label="Имя">
+            <el-input v-model="form.firstName"/>
           </el-form-item>
         </el-col>
+        <el-col :span="8">
+          <el-form-item
+            prop="lastName"
+            label="Фамилия">
+            <el-input v-model="form.lastName"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="8">
           <el-form-item label="E-mail">
             <el-input 
@@ -20,8 +29,6 @@
               name="copanyName"/>
           </el-form-item>
         </el-col>
-      </el-row>
-      <el-row>
         <el-col :span="8">
           <el-form-item label="Номер телефона">
             <el-input
@@ -29,33 +36,145 @@
               placeholder="+7 999 999-99-99" />
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="8">
           <el-form-item
-            prop="citiesIds"
+            prop="cityId"
             label="Город">
             <AsyncSelect
               service="cities"
               label="name"
-              :value="form.citiesIds"
-              :multiple="true"
-              @value-changed="val => form.citiesIds = val"
+              :value="form.cityId"
+              :multiple="false"
+              @value-changed="val => form.cityId = val"
             />
           </el-form-item>
         </el-col>
+        <!-- <el-col :span="8">
+          <el-form-item
+            prop="specializationsIds"
+            label="Специализации">
+            <AsyncSelect
+              service="specializations"
+              label="name"
+              :value="form.specializationsIds"
+              :multiple="true"
+              @value-changed="val => form.specializationsIds = val"
+            />
+          </el-form-item>
+        </el-col> -->
       </el-row>
+      <h1>Образование студента</h1>
+      <div v-for="(university, index) in form.universitiesIds" :key="index">
+        <el-row>
+          <el-col :span="8">
+            <el-form-item
+              prop="universityId"
+              label="Университет">
+              <AsyncSelect
+                service="cities"
+                label="name"
+                :value="university.universityId"
+                :multiple="false"
+                @value-changed="val => setUniversity('universityId', val, index)"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item
+              prop="specializationId"
+              label="Специализация">
+              <AsyncSelect
+                service="specializations"
+                label="name"
+                :value="university.specializationId"
+                :multiple="true"
+                @value-changed="val => setUniversity('specializationId', val, index)"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item
+              prop="universityId"
+              label="Дата поступления">
+              <el-date-picker
+                v-model="university.enterDate"
+                type="date"
+                format="yyyy"
+                placeholder="Выберите дату">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item
+              prop="universityId"
+              label="Дата окончания">
+              <el-date-picker
+                v-model="university.endDate"
+                type="date"
+                format="yyyy"
+                placeholder="Выберите дату">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item
+          label="Описание"
+        >
+          <Markdown 
+            :input="university.description"
+            @on-update="val => setUniversity('description', val, index)"
+          />
+        </el-form-item>
+      </div>
+      <el-button
+        type="primary"
+        @click="() => form.universitiesIds.push({})">
+        Добавить университет
+      </el-button>
+      
       <el-form-item
-        label="Описание"
+        label="Образование"
       >
         <Markdown 
-          :input="form.description"
-          @on-update="val => form.description = val"
+          :input="form.education"
+          @on-update="val => form.education = val"
         />
       </el-form-item>
-      <el-form-item label="Активный">
-        <el-switch 
-          v-model="form.isAvailable"
-          active-color="#13ce66"
-          inactive-color="#ff4949"/>
+      <el-form-item
+        label="Опыт работы"
+      >
+        <Markdown 
+          :input="form.job"
+          @on-update="val => form.job = val"
+        />
+      </el-form-item>
+      <el-form-item
+        label="Дополнительные скилы"
+      >
+        <Markdown 
+          :input="form.additionalSkills"
+          @on-update="val => form.additionalSkills = val"
+        />
+      </el-form-item>
+      <el-form-item
+        label="Личные навыки"
+      >
+        <Markdown 
+          :input="form.personalQualities"
+          @on-update="val => form.personalQualities = val"
+        />
+      </el-form-item>
+      <el-form-item
+        label="Достижения"
+      >
+        <Markdown 
+          :input="form.achievements"
+          @on-update="val => form.achievements = val"
+        />
       </el-form-item>
       <el-form-item
         v-if="!isEdit"
@@ -125,7 +244,7 @@ import Markdown from '@/components/Markdown'
 import AsyncSelect from '@/components/AsyncSelect'
 
 export default {
-  name: 'CompanyForm',
+  name: 'StudentForm',
 
   components: {
     Markdown,
@@ -141,6 +260,8 @@ export default {
         email: '',
         phone: '',
         description: '',
+        specializationsIds: [],
+        universitiesIds: [{}],
         isAvailable: true,
         // userId: ''
         user: {
@@ -209,14 +330,17 @@ export default {
 
   methods: {
     async fetchData() {
-      const companyService = this.$apiClient.service('companies')
-      const res = await companyService.get(this.$route.params.id)
+      const studentService = this.$apiClient.service('students')
+      const res = await studentService.get(this.$route.params.id)
 
       if (!res.user) {
         res.user = {
           email: '',
           password: '',
         }
+      }
+      if (!res.universitiesIds || res.universitiesIds.length === 0) {
+        res.universitiesIds = [{}]
       }
 
       this.form = res
@@ -235,10 +359,10 @@ export default {
         return false
       }
 
-      const companyService = this.$apiClient.service('companies')
+      const studentService = this.$apiClient.service('students')
 
       try {
-        await companyService.patch(this.$route.params.id, {
+        await studentService.patch(this.$route.params.id, {
           ...this.form,
         })
       } catch (err) {
@@ -254,7 +378,7 @@ export default {
         type: 'success',
       })
 
-      this.$router.push({ name: 'Companies' })
+      this.$router.push({ name: 'Students' })
     },
 
     async onAdd() {
@@ -264,10 +388,10 @@ export default {
         return false
       }
 
-      const companyService = this.$apiClient.service('companies')
+      const studentService = this.$apiClient.service('students')
 
       try {
-        await companyService.create({
+        await studentService.create({
           ...this.form,
         })
       } catch (err) {
@@ -283,7 +407,7 @@ export default {
         type: 'success',
       })
 
-      this.$router.push({ name: 'Companies' })
+      this.$router.push({ name: 'Students' })
     },
 
     async onCancel() {
@@ -301,7 +425,7 @@ export default {
         type: 'warning',
       })
 
-      this.$router.push({ name: 'Companies' })
+      this.$router.push({ name: 'Students' })
     },
 
     handleImageDataUrl(url) {
@@ -324,6 +448,10 @@ export default {
     validateEmail(email) {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ //eslint-disable-line
       return re.test(String(email).toLowerCase())
+    },
+
+    setUniversity(field, val, index) {
+      this.form.universitiesIds[index][field] = val
     },
   },
 }

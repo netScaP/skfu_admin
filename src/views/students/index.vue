@@ -4,7 +4,7 @@
       <div class="filters" />
       <div class="add-button">
         <router-link 
-          :to="{ name: 'addCategory' }">
+          :to="{ name: 'addStudent' }">
           <el-button
             type="success"
             icon="el-icon-plus"
@@ -14,7 +14,7 @@
     </div>
     <el-table
       v-loading="isLoading"
-      :data="categories"
+      :data="students"
       element-loading-text="Loading"
       border
       fit
@@ -24,54 +24,55 @@
         label="ID" 
         width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.row.id }}
         </template>
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Название">
+        label="Имя">
         <template slot-scope="scope">
-          {{ scope.row.name }}
+          {{ scope.row.firstName }}
+          {{ scope.row.lastName }}
         </template>
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Приоритет" 
+        label="Телефон" 
         width="200">
         <template slot-scope="scope">
-          {{ scope.row.priority }}
+          {{ scope.row.phone }}
         </template>
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Активный" 
-        width="150">
+        label="Email" 
+        width="200">
         <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.isAvailable"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            disabled/>
+          {{ scope.row.email }}
+        </template>
+      </el-table-column>
+      <el-table-column 
+        align="center" 
+        label="Дата рождения" 
+        width="200">
+        <template slot-scope="scope">
+          {{ scope.row.birthDate | toDateFormat }}
         </template>
       </el-table-column>
       <el-table-column
+        align="center"
         fixed="right"
         label="Действия"
-        width="470">
+        width="200">
         <template slot-scope="scope">
           <div class="el-button-group">
-            <el-button 
-              v-if="scope.row.active" 
-              size="small" 
-              @click="updateActive({active: false}, scope.row.id)">Deactivate
-            </el-button>
             <router-link 
-              :to="{ name: 'editCategory', params: { id: scope.row._id }}" 
+              :to="{ name: 'editStudent', params: { id: scope.row.id }}" 
               tag="button" 
               class="el-button el-button--default el-button--small" ><i class="el-icon-edit"/></router-link>
             <el-button 
               size="small" 
-              @click="handleDelete(scope.row._id)"><i class="el-icon-delete"/></el-button>
+              @click="handleDelete(scope.row.id)"><i class="el-icon-delete"/></el-button>
           </div>
         </template>
       </el-table-column>
@@ -90,20 +91,27 @@
 
 <script>
 import confirmUpdate from '@/mixins/confirmUpdate'
+import moment from 'moment'
 
 export default {
-  name: 'Categories',
+  name: 'Students',
 
-  mixins: [ confirmUpdate ],
+  mixins: [confirmUpdate],
 
   data() {
     return {
-      categories: [],
+      students: [],
       isLoading: true,
       total: 1,
       limit: 10,
-      page: 1
+      page: 1,
     }
+  },
+
+  filters: {
+    toDateFormat(val) {
+      return moment(val).format('YYYY-MM-DD')
+    },
   },
 
   mounted() {
@@ -112,31 +120,26 @@ export default {
 
   methods: {
     async fetchData() {
-      const categoriesService = this.$apiClient.service('categories')
+      const studentsService = this.$apiClient.service('students')
 
       this.isLoading = true
       const query = {
         $limit: this.limit,
         $skip: this.page - 1 ? (this.page - 1) * this.limit : 0,
-        $all: true,
-        $defaultImage: true
       }
 
-      const response = await categoriesService.find({
-        query
+      const response = await studentsService.find({
+        query,
       })
 
-      const {
-        data,
-        total
-      } = response
+      const { data, total } = response
 
       if (data.length === 0 && this.page > 1) {
         this.page -= 1
         return await this.fetchData()
       }
 
-      this.categories = data
+      this.students = data
       this.total = total
 
       this.isLoading = false
@@ -145,7 +148,6 @@ export default {
 
     handleSizeChange(pageSize) {
       this.limit = pageSize
-
       this.fetchData()
     },
 
@@ -153,20 +155,19 @@ export default {
 
     async handleDelete(id) {
       try {
-        await this.confirmUpdate('Точно удалить категорию?', 'Категория не удалена')
+        await this.confirmUpdate('Точно удалить студента?', 'Студент не удалена')
       } catch (err) {
         return false
       }
 
-      await this.$apiClient.service('categories').remove(id)
+      await this.$apiClient.service('students').remove(id)
       this.$message({
-        message: 'Категория удалена!',
-        type: 'success'
+        message: 'Студент удалена!',
+        type: 'success',
       })
 
       return await this.fetchData()
-    }
-  }
-
+    },
+  },
 }
 </script>

@@ -4,7 +4,7 @@
       <div class="filters" />
       <div class="add-button">
         <router-link 
-          :to="{ name: 'addCompany' }">
+          :to="{ name: 'addSpecialization' }">
           <el-button
             type="success"
             icon="el-icon-plus"
@@ -14,7 +14,7 @@
     </div>
     <el-table
       v-loading="isLoading"
-      :data="companies"
+      :data="specializations"
       element-loading-text="Loading"
       border
       fit
@@ -36,46 +36,20 @@
       </el-table-column>
       <el-table-column 
         align="center" 
-        label="Телефон" 
+        label="Тип" 
         width="200">
         <template slot-scope="scope">
-          {{ scope.row.phone }}
-        </template>
-      </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Email" 
-        width="200">
-        <template slot-scope="scope">
-          {{ scope.row.email }}
-        </template>
-      </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Активный" 
-        width="150">
-        <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.isAvailable"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            disabled/>
+          {{ scope.row.type === 'main' ? 'Основная' : 'Подкатегория' }}
         </template>
       </el-table-column>
       <el-table-column
-        align="center"
         fixed="right"
         label="Действия"
         width="200">
         <template slot-scope="scope">
           <div class="el-button-group">
-            <el-button 
-              size="small" 
-              @click="handleGoToWithCompany('Vacancies', scope.row.id)">
-              Вакансии
-            </el-button>
             <router-link 
-              :to="{ name: 'editCompany', params: { id: scope.row.id }}" 
+              :to="{ name: 'editSpecialization', params: { id: scope.row.id }}" 
               tag="button" 
               class="el-button el-button--default el-button--small" ><i class="el-icon-edit"/></router-link>
             <el-button 
@@ -98,18 +72,16 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-
 import confirmUpdate from '@/mixins/confirmUpdate'
 
 export default {
-  name: 'Companies',
+  name: 'Specializations',
 
   mixins: [confirmUpdate],
 
   data() {
     return {
-      companies: [],
+      specializations: [],
       isLoading: true,
       total: 1,
       limit: 10,
@@ -122,10 +94,8 @@ export default {
   },
 
   methods: {
-    ...mapActions('companies', ['setCompanyId']),
-
     async fetchData() {
-      const companiesService = this.$apiClient.service('companies')
+      const specializationsService = this.$apiClient.service('specializations')
 
       this.isLoading = true
       const query = {
@@ -133,7 +103,7 @@ export default {
         $skip: this.page - 1 ? (this.page - 1) * this.limit : 0,
       }
 
-      const response = await companiesService.find({
+      const response = await specializationsService.find({
         query,
       })
 
@@ -144,7 +114,7 @@ export default {
         return await this.fetchData()
       }
 
-      this.companies = data
+      this.specializations = data
       this.total = total
 
       this.isLoading = false
@@ -153,6 +123,7 @@ export default {
 
     handleSizeChange(pageSize) {
       this.limit = pageSize
+
       this.fetchData()
     },
 
@@ -160,25 +131,18 @@ export default {
 
     async handleDelete(id) {
       try {
-        await this.confirmUpdate('Точно удалить компанию?', 'Компания не удалена')
+        await this.confirmUpdate('Точно удалить специализацию?', 'Специализация не удалена')
       } catch (err) {
         return false
       }
 
-      await this.$apiClient.service('companies').remove(id)
+      await this.$apiClient.service('specializations').remove(id)
       this.$message({
-        message: 'Компания удалена!',
+        message: 'Специализация удалена!',
         type: 'success',
       })
 
       return await this.fetchData()
-    },
-
-    handleGoToWithCompany(pathName, companyId) {
-      this.setCompanyId(companyId)
-      this.$router.push({
-        name: pathName,
-      })
     },
   },
 }

@@ -14,49 +14,27 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="priority">
-            <el-input-number
-              v-model="form.priority" />
+          <el-form-item prop="type" label="Тип">
+            <el-select v-model="form.type">
+              <el-option label="Основная" value="main" />
+              <el-option label="Подспециализация" value="sub" />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row v-if="form.type === 'sub'">
         <el-col :span="8">
-          <el-form-item label="Активный">
-            <el-switch
-              v-model="form.isAvailable"
-              active-color="#13ce66"
-              inactive-color="#ff4949" />
+          <el-form-item label="Специализация">
+            <AsyncSelect
+              service="specializations"
+              label="name"
+              :value="form.specializationId"
+              :multiple="false"
+              @value-changed="val => form.specializationId = val"
+            />
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item 
-        label="Лого" 
-        class="avatar-uploader">
-        <img
-          v-if="imageUrl"
-          :src="imageUrl"
-          style="cursor: pointer;"
-          class="avatar"
-          @click="toggleShow">
-        <div
-          v-else
-          class="avatar-uploader"
-          @click="toggleShow">
-          <i class="el-icon-plus avatar-uploader-icon" />
-        </div>
-        <crop-upload
-          :show="show"
-          @input="toggleShow"
-          @update-image-url="handleImageDataUrl"
-          @image-loaded="handleAvatarSuccess"/>
-        <el-button
-          v-if="form.iconId || imageUrl !== ''"
-          type="danger"
-          @click="hideLogo">
-          Удалить иконку
-        </el-button>
-      </el-form-item>
       <el-form-item>
         <el-button
           v-if="isEdit"
@@ -80,33 +58,30 @@
 import validateForm from '@/mixins/validateForm'
 import confirmUpdate from '@/mixins/confirmUpdate'
 import cropUpload from '@/components/CropUpload'
+import AsyncSelect from '@/components/AsyncSelect'
 
 export default {
-  name: 'CategoryForm',
+  name: 'SpecializationForm',
 
   components: {
-    cropUpload
+    cropUpload,
+    AsyncSelect,
   },
 
-  mixins: [ validateForm, confirmUpdate ],
+  mixins: [validateForm, confirmUpdate],
 
   data() {
     return {
       form: {
         name: '',
-        priority: '',
-        isAvailable: false,
-        iconId: undefined
+        type: '',
       },
-      oldIcon: null,
       show: false,
       isEdit: false,
       rules: {
-        name: [
-          { required: true, message: 'Введите название категории', trigger: 'blur' }
-        ]
+        name: [{ required: true, message: 'Введите название специализаци', trigger: 'blur' }],
       },
-      imageUrl: ''
+      imageUrl: '',
     }
   },
 
@@ -119,8 +94,8 @@ export default {
 
   methods: {
     async fetchData() {
-      const categoriesService = this.$apiClient.service('categories')
-      const res = await categoriesService.get(this.$route.params.id)
+      const specializationsService = this.$apiClient.service('specializations')
+      const res = await specializationsService.get(this.$route.params.id)
 
       this.form = res
 
@@ -138,17 +113,17 @@ export default {
       }
 
       try {
-        await this.confirmUpdate('Сохранить изменения категории?', 'Категория не изменена')
+        await this.confirmUpdate('Сохранить изменения специализаци?', 'Специализация не изменена')
       } catch (err) {
         return false
       }
 
-      const categoriesService = this.$apiClient.service('categories')
+      const specializationsService = this.$apiClient.service('specializations')
 
-      await categoriesService.patch(this.$route.params.id, {
-        ...this.form
+      await specializationsService.patch(this.$route.params.id, {
+        ...this.form,
       })
-      
+
       if (this.oldIcon !== null) {
         const fileService = this.$apiClient.service('files')
         try {
@@ -159,11 +134,11 @@ export default {
       }
 
       this.$message({
-        message: 'Категория изменена!',
-        type: 'success'
+        message: 'Специализация изменена!',
+        type: 'success',
       })
 
-      this.$router.push({ name: 'Categories' })
+      this.$router.push({ name: 'Specializations' })
     },
 
     async onAdd() {
@@ -173,18 +148,18 @@ export default {
         return false
       }
 
-      const categoriesService = this.$apiClient.service('categories')
+      const specializationsService = this.$apiClient.service('specializations')
 
-      await categoriesService.create({
-        ...this.form
+      await specializationsService.create({
+        ...this.form,
       })
 
       this.$message({
-        message: 'Категория сохранена!',
-        type: 'success'
+        message: 'Специализация сохранена!',
+        type: 'success',
       })
 
-      this.$router.push({ name: 'Categories' })
+      this.$router.push({ name: 'Specializations' })
     },
 
     hideLogo() {
@@ -200,19 +175,21 @@ export default {
 
       this.form.iconId = null
       this.imageUrl = ''
-
     },
 
     async onCancel() {
       try {
-        await this.confirmUpdate('Оменить изменения категории?', 'Продолжайте редактирование категории')
+        await this.confirmUpdate(
+          'Оменить изменения специализаци?',
+          'Продолжайте редактирование специализаци'
+        )
       } catch (err) {
         return false
       }
 
       this.$message({
-        message: 'Категория не изменена!',
-        type: 'warning'
+        message: 'Специализация не изменена!',
+        type: 'warning',
       })
 
       if (this.isEdit && this.form.iconId !== null && this.form.iconId !== this.oldIcon) {
@@ -223,7 +200,7 @@ export default {
         await this.deleteLogo()
       }
 
-      this.$router.push({ name: 'Categories' })
+      this.$router.push({ name: 'Specializations' })
     },
 
     handleImageDataUrl(url) {
@@ -240,14 +217,13 @@ export default {
 
     toggleShow() {
       this.show = !this.show
-    }
-
-  }
+    },
+  },
 }
 </script>
 
 <style>
-.line{
+.line {
   text-align: center;
 }
 .avatar-uploader {
@@ -269,7 +245,7 @@ export default {
   text-align: center;
 }
 .avatar-uploader-icon:hover {
-  border-color: #409EFF;
+  border-color: #409eff;
 }
 .avatar {
   width: 178px;
@@ -277,4 +253,3 @@ export default {
   display: block;
 }
 </style>
-

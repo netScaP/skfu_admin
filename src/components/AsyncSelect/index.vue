@@ -67,9 +67,14 @@ export default {
       if (this.addressSearch) {
         query.$search = this.addressSearch
       }
-      this.addresses = await this.$apiClient.service(this.service).find({
+      const response = await this.$apiClient.service(this.service).find({
         query,
       })
+      if (Array.isArray(response)) {
+        this.addresses = response
+      } else {
+        this.addresses = response.data
+      }
     },
 
     resetAddresses(search) {

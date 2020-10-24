@@ -24,7 +24,7 @@
         label="ID" 
         width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.row.id }}
         </template>
       </el-table-column>
       <el-table-column 
@@ -37,10 +37,10 @@
       <el-table-column 
         align="center" 
         label="Рейтинг"
-        width="150">
+        width="120">
         <template slot-scope="scope">
           <star-rating
-            :rating="scope.row.assessment"
+            :rating="3.5"
             :read-only="true"
             :star-size="17"
             :show-rating="false"
@@ -54,7 +54,7 @@
         label="Процент трудоустроенных"
         width="250">
         <template slot-scope="scope">
-          {{ scope.row.rating }}%
+          {{ scope.row.rating || 10 }}%
         </template>
       </el-table-column>
       <el-table-column 
@@ -101,12 +101,17 @@
 <script>
 import { mapActions } from 'vuex'
 
+import StarRating from 'vue-star-rating'
 import confirmUpdate from '@/mixins/confirmUpdate'
 
 export default {
   name: 'Universities',
 
   mixins: [confirmUpdate],
+
+  components: {
+    StarRating,
+  },
 
   data() {
     return {

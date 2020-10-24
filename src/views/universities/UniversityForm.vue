@@ -14,15 +14,35 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <AsyncSelect
-            service="cities"
-            label="name"
-            placeholder="Город"
-            :value="form.cityId"
-            :multiple="false"
-            @value-changed="val => form.cityId = val"
-          />
+          <el-form-item
+            prop="cityId"
+            label="Город">
+            <AsyncSelect
+              service="cities"
+              label="name"
+              placeholder="Город"
+              :value="form.cityId"
+              :multiple="false"
+              @value-changed="val => form.cityId = val"
+            />
+          </el-form-item>
         </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item
+            prop="specializationsIds"
+            label="Специализации">
+            <AsyncSelect
+              service="specializations"
+              label="name"
+              :value="form.specializationsIds"
+              :multiple="true"
+              @value-changed="val => form.specializationsIds = val"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" />
       </el-row>
       <el-form-item
         label="Описание"
@@ -121,6 +141,8 @@ export default {
         name: '',
         description: '',
         isAvailable: true,
+        citiesIds: [],
+        specializationsIds: [],
         // userId: ''
         user: {
           email: '',

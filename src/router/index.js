@@ -127,28 +127,70 @@ export const constantRouterMap = [
   },
 
   {
-    path: '/categories/',
+    path: '/students',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Categories',
-        component: () => import('@/views/categories/index'),
-        meta: { title: 'Категории', icon: 'categories' },
+        name: 'Students',
+        component: () => import('@/views/students/index'),
+        meta: {
+          title: 'Студенты',
+          icon: 'students',
+          roles: ['admin'],
+        },
       },
       {
         path: 'add',
-        name: 'addCategory',
+        name: 'addStudent',
         hidden: true,
-        component: () => import('@/views/categories/CategoryForm'),
-        meta: { title: 'Добавление категории', icon: 'categories' },
+        component: () => import('@/views/students/StudentForm'),
+        meta: {
+          title: 'Добавление студента',
+          icon: 'students',
+          roles: ['admin'],
+        },
       },
       {
         path: 'edit/:id',
-        name: 'editCategory',
+        name: 'editStudent',
         hidden: true,
-        component: () => import('@/views/categories/CategoryForm'),
-        meta: { title: 'Изменение категории', icon: 'categories' },
+        component: () => import('@/views/students/StudentForm'),
+        meta: {
+          title: 'Изменение студента',
+          icon: 'students',
+          roles: ['admin'],
+        },
+      },
+    ],
+    meta: {
+      availableRoles: ['admin'],
+    },
+  },
+
+  {
+    path: '/specializations/',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Specializations',
+        component: () => import('@/views/specializations/index'),
+        meta: { title: 'Специализации', icon: 'categories' },
+      },
+      {
+        path: 'add',
+        name: 'addSpecialization',
+        hidden: true,
+        component: () => import('@/views/specializations/SpecializationForm'),
+        meta: { title: 'Добавление специализации', icon: 'categories' },
+      },
+      {
+        path: 'edit/:id',
+        name: 'editSpecialization',
+        hidden: true,
+        component: () => import('@/views/specializations/SpecializationForm'),
+        meta: { title: 'Изменение специализации', icon: 'categories' },
       },
     ],
     meta: {
