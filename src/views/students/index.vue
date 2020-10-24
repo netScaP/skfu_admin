@@ -1,15 +1,15 @@
 <template>
   <div class="app-container">
     <div class="top-menu el-col el-col-24 el-col-xs-24 el-col-sm-24 el-col-md-24 tp-text--right mb-4">
-      <div class="filters" />
-        <!-- <el-input
+      <div class="filters">
+        <el-input
           v-model="filters.$search"
           placeholder="Название"
         />
         <el-button @click="onFilterClick">
           Применить
         </el-button>
-      </div> -->
+      </div>
       <div class="add-button">
         <router-link 
           :to="{ name: 'addStudent' }">

@@ -65,18 +65,6 @@
           {{ scope.row.rating || 10 }}%
         </template>
       </el-table-column>
-      <el-table-column 
-        align="center" 
-        label="Активный" 
-        width="150">
-        <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.isAvailable"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            disabled/>
-        </template>
-      </el-table-column>
       <el-table-column
         fixed="right"
         label="Действия"

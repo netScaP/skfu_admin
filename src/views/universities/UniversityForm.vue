@@ -52,12 +52,6 @@
           @on-update="val => form.description = val"
         />
       </el-form-item>
-      <el-form-item label="Активный">
-        <el-switch 
-          v-model="form.isAvailable"
-          active-color="#13ce66"
-          inactive-color="#ff4949"/>
-      </el-form-item>
       <el-form-item
         v-if="!isEdit"
         prop="user"
@@ -140,7 +134,6 @@ export default {
       form: {
         name: '',
         description: '',
-        isAvailable: true,
         citiesIds: [],
         specializationsIds: [],
         // userId: ''
