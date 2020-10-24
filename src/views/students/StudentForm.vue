@@ -32,13 +32,13 @@
         <el-col :span="8" />
       </el-row>
       <el-row>
-        <el-col :span="8">
-          <el-form-item label="E-mail">
+        <el-col :span="8" />
+          <!-- <el-form-item label="E-mail">
             <el-input 
               v-model="form.email" 
               name="copanyName"/>
           </el-form-item>
-        </el-col>
+        </el-col> -->
         <el-col :span="8">
           <el-form-item label="Номер телефона">
             <el-input
@@ -255,12 +255,10 @@ export default {
     return {
       form: {
         name: '',
-        email: '',
         phone: '',
         description: '',
         universitiesIds: [{}],
         tags: [],
-        isAvailable: true,
         // userId: ''
         user: {
           email: '',
@@ -292,7 +290,6 @@ export default {
             },
             trigger: 'blur',
           },
-          { required: true, trigger: 'blur' },
         ],
       },
       isNewPassword: false,
@@ -392,6 +389,7 @@ export default {
       try {
         await studentService.create({
           ...this.form,
+          email: this.form.user.email,
         })
       } catch (err) {
         this.$message({
