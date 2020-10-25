@@ -34,35 +34,14 @@ const user = {
 
     async setToken({ commit }, payload) {
       try {
-        const jwtDecode = await apiClient.passport.verifyJWT(payload)
-        console.log(jwtDecode)
-        const authUser = await apiClient.service('users').get(jwtDecode.sub)
-        await apiClient.set('user', authUser)
+        const { user, accessToken } = await apiClient.authenticate({
+          accessToken: payload,
+          strategy: 'jwt',
+        })
+        await apiClient.set('user', user)
 
-        let id
-        let permissionType
-        if (authUser && authUser.role === 'company') {
-          permissionType = 'companies'
-        }
-        if (authUser && authUser.role === 'point') {
-          permissionType = 'points'
-        }
-        const permission =
-          authUser && authUser.permissions
-            ? authUser.permissions.find(e => e.split(':*:')[0] === permissionType)
-            : undefined
-        if (permission) {
-          id = permission.split(':*:')[1]
-        }
-        if (permissionType === 'companies') {
-          commit('companies/SET_COMPANY_ID', id, { root: true })
-        }
-        if (permissionType === 'points') {
-          commit('companies/SET_POINT_ID', id, { root: true })
-        }
-
-        commit('SET_TOKEN', payload)
-        commit('SET_AUTH_USER', authUser)
+        commit('SET_TOKEN', accessToken)
+        commit('SET_AUTH_USER', user)
         return Promise.resolve('OK')
       } catch (e) {
         Promise.reject(e)

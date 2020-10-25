@@ -7,6 +7,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '../views/layout/Layout'
+import StudentLayout from '../views/layout/student/index'
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -23,6 +24,34 @@ import Layout from '../views/layout/Layout'
 
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
+  { path: '/preview', component: () => import('@/views/preview/index'), hidden: true },
+  {
+    path: '/student',
+    component: StudentLayout,
+    children: [
+      {
+        path: 'login',
+        name: 'StudentLogin',
+        component: () => import('@/views/student-page/login'),
+        meta: { title: 'Login' },
+      },
+      {
+        path: 'profile/:id',
+        name: 'StudentProfile',
+        component: () => import('@/views/student-page/index'),
+        meta: {
+          title: 'Profile',
+          availableRoles: ['student'],
+        },
+      },
+    ],
+    meta: {
+      title: 'Profile',
+      availableRoles: ['student'],
+    },
+    hidden: true,
+  },
+
   { path: '/404', component: () => import('@/views/404'), hidden: true },
 
   {

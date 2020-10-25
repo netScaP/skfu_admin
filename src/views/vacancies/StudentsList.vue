@@ -149,6 +149,8 @@ export default {
   watch: {
     tags: {
       handler() {
+        console.log('le')
+
         this.page = 1
         this.fetchData()
       },
@@ -171,6 +173,7 @@ export default {
         tags: this.tags,
         $sort: { id: -1 },
       }
+      console.log(this.tags)
 
       Object.keys(this.filters).forEach(key => {
         if (this.filters[key]) {
@@ -183,6 +186,7 @@ export default {
       })
 
       const { data, total } = response
+      console.log(data)
 
       if (data.length === 0 && this.page > 1) {
         this.page -= 1
